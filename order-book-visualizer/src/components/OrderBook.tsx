@@ -16,7 +16,7 @@ function OrderBookRow({ price, amount, total, maxTotal, side }: OrderBookRowProp
   const percentage = maxTotal > 0 ? (total / maxTotal) * 100 : 0;
   
   return (
-    <div className="relative h-6 flex items-center hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
+    <div className="relative h-5 sm:h-6 flex items-center hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors">
       {/* Background depth bar - using inline style for dynamic width */}
       <div
         className={`absolute top-0 h-full ${
@@ -27,12 +27,12 @@ function OrderBookRow({ price, amount, total, maxTotal, side }: OrderBookRowProp
         style={{ width: `${percentage}%` }}
       />
       {/* Content */}
-      <div className="relative z-10 w-full grid grid-cols-3 gap-2 px-2 text-xs font-mono">
-        <span className={side === "bid" ? "text-green-500 font-medium" : "text-red-500 font-medium"}>
+      <div className="relative z-10 w-full grid grid-cols-3 gap-1 sm:gap-2 px-1 sm:px-2 text-[10px] sm:text-xs font-mono">
+        <span className={`truncate ${side === "bid" ? "text-green-500 font-medium" : "text-red-500 font-medium"}`}>
           {price.toFixed(2)}
         </span>
-        <span className="text-right text-zinc-700 dark:text-zinc-300">{amount.toFixed(4)}</span>
-        <span className="text-right text-zinc-500 dark:text-zinc-400">{total.toFixed(4)}</span>
+        <span className="text-right text-zinc-700 dark:text-zinc-300 truncate">{amount.toFixed(4)}</span>
+        <span className="text-right text-zinc-500 dark:text-zinc-400 truncate">{total.toFixed(4)}</span>
       </div>
     </div>
   );
@@ -100,26 +100,26 @@ export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symb
   }, [spread, processedAsks.rows]);
 
   return (
-    <div className="rounded-md border border-zinc-200 dark:border-zinc-800 p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Order Book</h2>
-        <div className="flex items-center gap-2">
-          <div className={`h-2 w-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`} />
+    <div className="rounded-md border border-zinc-200 dark:border-zinc-800 p-2 sm:p-3 md:p-4">
+      <div className="mb-3 md:mb-4 flex items-center justify-between">
+        <h2 className="text-base sm:text-lg font-semibold">Order Book</h2>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${connected ? "bg-green-500" : "bg-red-500"}`} />
           <span className="text-xs text-zinc-500">
             {connected ? "Live" : "Disconnected"}
           </span>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Bids Column */}
-        <div>
-          <div className="mb-3 grid grid-cols-3 gap-2 px-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-            <span>Price (USDT)</span>
-            <span className="text-right">Amount (BTC)</span>
-            <span className="text-right">Total</span>
+        <div className="overflow-hidden">
+          <div className="mb-2 md:mb-3 grid grid-cols-3 gap-1 sm:gap-2 px-1 sm:px-2 text-[10px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+            <span className="truncate">Price</span>
+            <span className="text-right truncate">Amount</span>
+            <span className="text-right truncate">Total</span>
           </div>
-          <div className="space-y-px border border-zinc-200 dark:border-zinc-700 rounded-md overflow-hidden">
+          <div className="space-y-px border border-zinc-200 dark:border-zinc-700 rounded-md overflow-hidden max-h-[300px] sm:max-h-[400px] overflow-y-auto">
             {processedBids.rows.length > 0 ? (
               processedBids.rows.map((row) => (
                 <OrderBookRow
@@ -140,13 +140,13 @@ export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symb
         </div>
 
         {/* Asks Column */}
-        <div>
-          <div className="mb-3 grid grid-cols-3 gap-2 px-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-            <span>Price (USDT)</span>
-            <span className="text-right">Amount (BTC)</span>
-            <span className="text-right">Total</span>
+        <div className="overflow-hidden">
+          <div className="mb-2 md:mb-3 grid grid-cols-3 gap-1 sm:gap-2 px-1 sm:px-2 text-[10px] sm:text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+            <span className="truncate">Price</span>
+            <span className="text-right truncate">Amount</span>
+            <span className="text-right truncate">Total</span>
           </div>
-          <div className="space-y-px border border-zinc-200 dark:border-zinc-700 rounded-md overflow-hidden">
+          <div className="space-y-px border border-zinc-200 dark:border-zinc-700 rounded-md overflow-hidden max-h-[300px] sm:max-h-[400px] overflow-y-auto">
             {processedAsks.rows.length > 0 ? (
               processedAsks.rows.map((row) => (
                 <OrderBookRow
@@ -168,11 +168,11 @@ export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symb
       </div>
 
       {/* Spread Display */}
-      <div className="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-800 text-center">
+      <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-zinc-200 dark:border-zinc-800 text-center">
         <div className="text-xs text-zinc-500">Spread</div>
-        <div className="text-sm font-mono font-semibold">
+        <div className="text-xs sm:text-sm font-mono font-semibold">
           {spread.toFixed(2)} USDT{" "}
-          <span className="text-xs text-zinc-500">
+          <span className="text-[10px] sm:text-xs text-zinc-500">
             ({spreadPercent.toFixed(3)}%)
           </span>
         </div>
