@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useBinanceSocket } from "@/hooks/useBinanceSocket";
 import { useMockBinanceData } from "@/hooks/useMockBinanceData";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -46,11 +46,20 @@ function OrderBookRow({ price, amount, total, maxTotal, side }: OrderBookRowProp
   );
 }
 
-export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
+export default function OrderBook({ symbol = "btc/usdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
   const mockData = useMockBinanceData();
   const realData = useBinanceSocket(symbol, useMock);
   
   const { bids, asks, connected } = useMock ? mockData : realData;
+
+  // Responsive helper: treat screens smaller than Tailwind's `sm` (640px) as mobile
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(typeof window !== "undefined" && window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const processedBids = useMemo(() => {
     const sorted = bids
@@ -123,19 +132,25 @@ export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symb
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 shadow-lg">
-          <p className="text-xs font-bold text-zinc-900 dark:text-white mb-1">
+        <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-2 shadow-xl">
+          <p className="text-xs font-bold text-zinc-900 dark:text-white mb-1.5 border-b border-zinc-200 dark:border-zinc-700 pb-1">
             ${payload[0].payload.price.toFixed(2)}
           </p>
           {payload[0].value > 0 && (
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">
-              Bid: {payload[0].value.toFixed(4)} BTC
-            </p>
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <p className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                Bid: {payload[0].value.toFixed(4)} BTC
+              </p>
+            </div>
           )}
           {payload[1]?.value > 0 && (
-            <p className="text-xs text-rose-600 dark:text-rose-400">
-              Ask: {payload[1].value.toFixed(4)} BTC
-            </p>
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              <p className="text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                Ask: {payload[1].value.toFixed(4)} BTC
+              </p>
+            </div>
           )}
         </div>
       );
@@ -167,61 +182,74 @@ export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symb
       </div>
 
       {/* Market Depth Chart - Clear Data Visualization */}
-      <div className="px-5 py-4 bg-gradient-to-b from-zinc-50/50 to-white dark:from-zinc-900/50 dark:to-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="mb-3 flex items-center justify-between">
+      <div className="px-3 py-3 sm:px-5 sm:py-4 bg-gradient-to-b from-zinc-50/50 to-white dark:from-zinc-900/50 dark:to-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="mb-2 sm:mb-3 flex items-center justify-between">
           <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
             Market Depth Chart
           </h3>
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs">
             <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50" />
               <span className="font-medium text-zinc-600 dark:text-zinc-400">Bids</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-rose-500" />
+              <div className="h-2 w-2 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50" />
               <span className="font-medium text-zinc-600 dark:text-zinc-400">Asks</span>
             </div>
           </div>
         </div>
         
-        <div className="h-48 w-full bg-white dark:bg-zinc-900/50 rounded-lg border border-zinc-200 dark:border-zinc-800 p-2">
+        <div className="h-72 sm:h-64 w-full bg-gradient-to-br from-white via-zinc-50/50 to-white dark:from-zinc-900 dark:via-zinc-900/50 dark:to-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-2 sm:p-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={depthChartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+            <AreaChart data={depthChartData} margin={{ top: 10, right: 10, left: isMobile ? -16 : 6, bottom: 5 }}>
               <defs>
                 <linearGradient id="bidGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  <stop offset="0%" stopColor="#10b981" stopOpacity={0.4}/>
+                  <stop offset="50%" stopColor="#10b981" stopOpacity={0.2}/>
+                  <stop offset="100%" stopColor="#10b981" stopOpacity={0.05}/>
                 </linearGradient>
                 <linearGradient id="askGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                  <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.4}/>
+                  <stop offset="50%" stopColor="#f43f5e" stopOpacity={0.2}/>
+                  <stop offset="100%" stopColor="#f43f5e" stopOpacity={0.05}/>
                 </linearGradient>
               </defs>
               <XAxis 
                 dataKey="price" 
-                tick={{ fontSize: 11, fill: '#71717a' }}
-                tickFormatter={(value) => `$${value.toFixed(0)}`}
-                stroke="#e4e4e7"
+                tick={{ fontSize: 11, fill: '#71717a', fontWeight: 500 }}
+                tickFormatter={(value) => `${value.toFixed(0)}`}
+                stroke="#d4d4d8"
+                strokeWidth={1}
+                tickLine={false}
+                axisLine={{ stroke: '#e4e4e7', strokeWidth: 1 }}
               />
               <YAxis 
-                tick={{ fontSize: 11, fill: '#71717a' }}
+                tick={{ fontSize: 11, fill: '#71717a', fontWeight: 500 }}
                 tickFormatter={(value) => value.toFixed(1)}
-                stroke="#e4e4e7"
+                stroke="#d4d4d8"
+                strokeWidth={1}
+                tickLine={false}
+                axisLine={{ stroke: '#e4e4e7', strokeWidth: 1 }}
+                label={isMobile ? undefined : { value: 'BTC', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#71717a', fontWeight: 600 } }}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#71717a', strokeWidth: 1, strokeDasharray: '5 5' }} />
               <Area 
-                type="stepAfter" 
+                type="monotone" 
                 dataKey="bidTotal" 
                 stroke="#10b981" 
-                strokeWidth={2}
-                fill="url(#bidGradient)" 
+                strokeWidth={3}
+                fill="url(#bidGradient)"
+                animationDuration={800}
+                animationEasing="ease-in-out"
               />
               <Area 
-                type="stepBefore" 
+                type="monotone" 
                 dataKey="askTotal" 
                 stroke="#f43f5e" 
-                strokeWidth={2}
-                fill="url(#askGradient)" 
+                strokeWidth={3}
+                fill="url(#askGradient)"
+                animationDuration={800}
+                animationEasing="ease-in-out"
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -50,7 +50,7 @@ function TradeRow({ price, qty, time, side, isNew }: TradeRowProps) {
   );
 }
 
-export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
+export default function RecentTrades({ symbol = "btc/usdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
   const mockData = useMockBinanceData();
   const realData = useBinanceSocket(symbol, useMock);
   
@@ -109,8 +109,8 @@ export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { s
 
       {/* Trade Statistics */}
       <div className="px-5 py-3 bg-gradient-to-b from-zinc-50/50 to-white dark:from-zinc-900/50 dark:to-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+        <div className="grid grid-cols-2 lg:grid-cols-[1fr_1fr] gap-3 max-w-3xl mx-auto">
+          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex flex-col">
             <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
               Buy Trades
             </div>
@@ -119,7 +119,7 @@ export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { s
             </div>
           </div>
           
-          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex flex-col">
             <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
               Sell Trades
             </div>
@@ -128,7 +128,7 @@ export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { s
             </div>
           </div>
           
-          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex flex-col">
             <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
               Total Volume
             </div>
@@ -137,9 +137,9 @@ export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { s
             </div>
           </div>
           
-          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800">
+          <div className="p-3 rounded-lg bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 flex flex-col">
             <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
-              Avg Price
+              Average Price
             </div>
             <div className="text-lg font-bold text-zinc-900 dark:text-white tabular-nums">
               ${stats.avgPrice.toFixed(2)}
