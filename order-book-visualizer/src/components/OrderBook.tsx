@@ -46,7 +46,7 @@ function OrderBookRow({ price, amount, total, maxTotal, side }: OrderBookRowProp
   );
 }
 
-export default function OrderBook({ symbol = "btc/usdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
+export default function OrderBook({ symbol = "btcusdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
   const mockData = useMockBinanceData();
   const realData = useBinanceSocket(symbol, useMock);
   

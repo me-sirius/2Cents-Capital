@@ -50,7 +50,7 @@ function TradeRow({ price, qty, time, side, isNew }: TradeRowProps) {
   );
 }
 
-export default function RecentTrades({ symbol = "btc/usdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
+export default function RecentTrades({ symbol = "btcusdt", useMock = true }: { symbol?: string; useMock?: boolean }) {
   const mockData = useMockBinanceData();
   const realData = useBinanceSocket(symbol, useMock);
   
